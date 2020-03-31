@@ -1,0 +1,46 @@
+---
+title: ""
+author: "Claudia Solis-Roman"
+date: "March 8, 2020"
+output: html_document
+---
+
+#Ravi clas proj - Texas stops & race classification 
+tx1  
+csr315@nyu.edu  mvb
+DUE: MONDAY MAY 11
+
+ dta: https://openpolicing.stanford.edu/data/  
+ doc: https://github.com/stanford-policylab/opp/blob/master/data_readme.md
+ code: https://github.com/stanford-policylab/opp/tree/master/lib
+
+ progs: 
+   1 Looking at Texas state data.R
+   2 Downloading census data.R
+
+#outline of report
+clearly state and motivate your project/research question/policy evaluation idea, 
+summarize related academic literature, 
+describe your methods, 
+detail your results (with the appropriate plots), and 
+discuss the implications of your findings. 
+Unless you receive permission for an exception from the instructor, you must also include a section discussing potential ethical implications or concerns related to the project .
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#no code shown or run
+```
+
+```{r}
+
+```
+
+## Including Plots
+
+```{r pressure, echo=FALSE}
+#plots but no code
+plot(pressure)
+```
+

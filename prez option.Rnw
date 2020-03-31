@@ -1,0 +1,25 @@
+\documentclass{article}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+DUE: MAY 7 2020
+Each group will give a final presentation in class during Week 14 ( May 7, 2020 ). Presentations
+should generally be around 30 minutes, including time for Q&A.
+Your final presentation will be graded according to the following criteria:
+– Was the presentation coherently organized and easy to follow?
+– Was appropriate background and context for the project provided?
+– Were the datasets and analytical methods clearly and accurately described?
+– Were the presenters prepared and able to engage in discussion of the project?
+– Did the presentation stay within recommended time limits?
+– Were slides and graphics easy to read and labeled correctly, and was all grammar and
+spelling correct?	
+
+Ideas for using beamer or metropolis with rmd
+https://www.overleaf.com/project/5bdf2fe50d2e246ce98b29a2  
+Project: EHA - OUD & Surgery - 10Dec2018
+https://rmarkdown.rstudio.com/articles_beamer.html
+https://bookdown.org/yihui/rmarkdown/beamer-presentation.html
+https://github.com/eddelbuettel/samples-rmarkdown-metropolis/blob/master/beamerPresentation.Rmd
+https://www.r-bloggers.com/rmarkdown-and-metropolismtheme/
+\end{document}
