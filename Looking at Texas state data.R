@@ -123,12 +123,21 @@ tx[subject_race == "hispanic" & rawrace == "U", misclass := "Hisp - coded Unknow
 tx[subject_race == "hispanic" & rawrace == "W", misclass := "Hisp - coded White" ]
 table(tx$misclass)
 
-
 #collapsed categories - ignore the I and M cases - join the U and O cases
 tx[subject_race == "hispanic" & rawrace == "W", mc := "H-W" ]
 tx[subject_race == "hispanic" & rawrace == "H", mc := "H-H" ]
 tx[subject_race == "hispanic" & rawrace %in% c("O", "U"), mc := "H-O" ]
 table(tx$mc)
+
+#collapsed categories 2 - join I and O - separate U
+#has middle eastern category fix switch to white
+tx[subject_race == "hispanic" & rawrace %in% c("W","M"), mc_wmissing := "H-W" ]
+tx[subject_race == "hispanic" & rawrace == "H", mc_wmissing := "H-H" ]
+tx[subject_race == "hispanic" & rawrace %in% c("O","I"), mc_wmissing := "H-O" ]
+tx[subject_race == "hispanic" & rawrace == "U", mc_wmissing := "H-U" ]
+tx[subject_race == "hispanic" & rawrace == "M", mc_wmissing := "H-M" ]
+table(tx$mc_wmissing)
+
 
 options(max.print = 3000)
 #all three cats
