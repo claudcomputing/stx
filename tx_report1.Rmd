@@ -17,6 +17,10 @@ DUE: MONDAY MAY 11
  progs: 
    1 Looking at Texas state data.R
    2 Downloading census data.R
+   3 Merging census data with Texas data
+   4 Clean Texas state data
+   5 Create descriptive tables
+   6 Run regression models
 
 #outline of report
 clearly state and motivate your project/research question/policy evaluation idea, 
