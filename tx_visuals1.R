@@ -5,20 +5,30 @@
 # dta: https://openpolicing.stanford.edu/data/  
 # doc: https://github.com/stanford-policylab/opp/blob/master/data_readme.md  
 
-# env
+# env ----
 library(table1)
 library(ggplot2)
 library(forcats)
-library(data.table)
-#library(tidyverse)
+library(tidyverse)
 
 #p<-readRDS("C:/Users/csr315/Box/ddpe/stx/dta/kx738rc7407_tx_plano_2019_12_17.rds")
-load("C:/Users/csr315/Box Sync/ddpe/stx/dta/Texas1MSample.Rdata")
+#load("C:/Users/csr315/Box Sync/ddpe/stx/dta/Texas1MSample.Rdata")
+load("C:/Users/Claud/Box/ddpe/dta/Texas1MSample.Rdata")
 head(tx$raw_HA_RACE_SEX)
 names(tx)
 
-# define
-#collapsed categories 2 - join I and O - separate U and M cases
+#clean label reshape ----
+
+#subsample
+#years 2009-2015
+tx<-tx %>% 
+  filter(year(tx$date)<2016 & year(tx$date)> 2008) %>%
+  mutate(year=year(tx$date))
+table(year(tx$date), tx$mc)
+
+#define labels  
+
+#collapsed categories 2 - join I and O - separate U
 #has middle eastern category fix switch to white
 tx[subject_race == "hispanic" & rawrace %in% c("W","M"), mc_wmissing := "H-W" ]
 tx[subject_race == "hispanic" & rawrace == "H", mc_wmissing := "H-H" ]
@@ -27,26 +37,40 @@ tx[subject_race == "hispanic" & rawrace == "U", mc_wmissing := "H-U" ]
 tx[subject_race == "hispanic" & rawrace == "M", mc_wmissing := "H-M" ]
 table(tx$mc_wmissing)
 
-#make raw race labels
-racelabels<-levels(tx$subject_race)
-racelabels_i<-c(racelabels[1:3],"other","white","other","unknown","white")
-rawraceshort_i<-levels(as.factor(tx$rawrace))
-for(i in 1:length(racelabels_i)) {
-  tx[rawrace == rawraceshort_i[i], raw_race := racelabels_i[i]]  
-}
+#make raw race labels  ----
+#labels middle east as white. Very few M (~40 in rand samp)
+levels(tx$subject_race)
+levels(as.factor(tx$rawrace))
+tx$raw_race <- ifelse(tx$rawrace=="A", "Asian", #/Pacific Islander
+                           ifelse(tx$rawrace=="B", "Black", 
+                                  ifelse(tx$rawrace=="H", "Hispanic",
+                                         ifelse(tx$rawrace %in% c("I","O"), "Other",
+                                                ifelse(tx$rawrace == "U", "Unknown",
+                                                       ifelse(tx$rawrace %in% c("M","W"), "White", "Missing"))))))
 table(tx$raw_race,tx$rawrace)
+head(tx$rawrace)
+head(tx$raw_race)
+df <- tx %>%
+  select(year, mc, uempmed) %>%
+  gather(key = "variable", value = "value", -date)
+head(df, 3)
 
-#plot race - raw and recoded, raw by recoded, and mcs
-ggplot(tx, aes(x=subject_race,fill= subject_race,color = subject_race)) + geom_histogram(stat="count")
-ggplot(tx, aes(x=raw_race,fill= subject_race,color = raw_race)) + geom_histogram(stat="count") 
-ggplot(tx, aes(x=raw_race,fill= subject_race)) + geom_bar(position="dodge")
+#plot ----
+# plot race - raw and recoded, raw by recoded, and mcs
+ggplot(data=tx, aes(x=year, y=mc)) + geom_line(aes(color = mc))
+
+# explore ----
 ggplot(tx, aes(x=mc)) + geom_histogram(stat="count")
+ggplot(tx, aes(x=raw_race,fill= subject_race,color = raw_race)) + geom_histogram(stat="count") 
+ggplot(tx, aes(x=subject_race,fill= subject_race,color = subject_race)) + geom_histogram(stat="count")
+ggplot(tx, aes(x=raw_race,fill= subject_race)) + geom_bar(position="dodge")
 ggplot(tx, aes(x=mc_wmissing)) + geom_histogram(stat="count")
 
-#desc tables
+#desc tables ----
+table(year(tx$date), tx$mc)
 
 # describe 
-# DEBUG these have NULL
+
 #demogs
 #label(tx$subject_age) <-"Age"
 label(tx$subject_sex) <-"Sex"
