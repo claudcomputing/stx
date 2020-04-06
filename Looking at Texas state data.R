@@ -1,7 +1,12 @@
+# 1 
+# texas_race_sex.rds --> Texas1MSample.Rdata
+# removies missing lat long, 
+
 # this code is for a preliminary looksy at the texas state trooper data   
 
 # set working directory -------------
 setwd("/Users/MVERAS/Documents/Data Driven Eval/Data/")
+setwd("C:/Users/Claud/Box/ddpe/dta/")
 
 # load packages -----------------------------------------------------------
 library(data.table)
@@ -112,7 +117,7 @@ table(tx$rawrace, tx$subject_race)
 # code hispanic by name cases 
 tx[subject_race == "hispanic" & rawrace == "H", misclass := "Hisp - coded Hisp" ]
 tx[subject_race == "hispanic" & rawrace == "I", misclass := "Hisp - coded Indig" ]
-tx[subject_race == "hispanic" & rawrace == "M", misclass := "Hisp - coded M" ]
+tx[subject_race == "hispanic" & rawrace == "M", misclass := "Hisp - coded MiddleEast" ]
 tx[subject_race == "hispanic" & rawrace == "O", misclass := "Hisp - coded Other" ]
 tx[subject_race == "hispanic" & rawrace == "U", misclass := "Hisp - coded Unknown" ]
 tx[subject_race == "hispanic" & rawrace == "W", misclass := "Hisp - coded White" ]
