@@ -161,10 +161,11 @@ table1(~search_basis + contraband_found + search_conducted + contraband_weapons 
 #TX County Percent Hispanic
 data(df_county_demographics)
 df_county_demographics$value = df_county_demographics$percent_hispanic
+col.pal<-brewer.pal(9,"Blues")
 m1<-county_choropleth(df_county_demographics, 
                   state_zoom = "texas",
                   title      = "Texas County Percent Hispanic Estimates, 2012",
-                  num_colors = 9) + coord_map() +scale_fill_manual(name="Percent Hispanic")
+                  num_colors = 9) + coord_map() + scale_fill_manual(name="Percent Hispanic",values=col.pal, drop=FALSE)
 #TX County Average Per Capita Income 
 df_county_demographics$value = df_county_demographics$per_capita_income 
 col.pal<-brewer.pal(7,"Greens")
@@ -185,59 +186,3 @@ t3_mc_09n15_stopstats<-t3
 m1_county_hispanic<-m1
 m2_county_income<-m2
 rm(df,df1,df2,df3,df4,p1,p2,p3,p2_p3,t1,t2,t3,m1,m2)
-
-
-
-
-################Notes and deleted ----
-#found contraband (numerator of hit rate)
-data$found.true <- NA
-data$found.true <- ifelse(data$contraband_found == T, T, ifelse(data$found.pistol ==T, T, ifelse(data$found.rifle==T, T, ifelse(data$found.assault == T, T, ifelse(data$found.knife== T, T, ifelse(data$found.machinegun==T, T, ifelse(data$found.other== T, T, ifelse(data$found.gun == T, T, ifelse(data$found.weapon==T, T, F)))))))))
-names(tx)
-
-
-#Data frame for Predicted Probability Plot
-glm_data <- data %>% filter(suspected.crime == "cpw") %>% mutate(year.f = factor(year, level = c(2012:2016)))
-
-glm.found.t <- glm(found.weapon ~ suspect.age + suspect.height + suspect.weight + suspect.build + suspect.sex + year.f*suspect.race, data = glm_data, family = "binomial")
-
-glm.found <- glm(found.weapon ~ suspect.age + suspect.height + suspect.weight + suspect.build + suspect.sex + year*suspect.race, data = glm_data, family = "binomial")
-
-glm_data <- glm_data %>% 
-  mutate(predicted = predict(glm.found.t, type = "response"))
-
-# Save the logistic regression result
-result <- tidy(glm.found.t) %>% kable()
-
-#time = factor(c("Lunch","Dinner"), levels=c("Lunch","Dinner")
-#forcats::fct_inorder(Day44$Sample)
-
-
-
-tx[rawrace == "H", raw_race := "hispanic"]
-tx[rawrace == "B", raw_race := "black"]
-tx[rawrace == "I", raw_race := "indigenous"]
-tx[rawrace == "M", raw_race := "missing"]
-tx[rawrace == "O", raw_race := "other"]
-tx[rawrace == "U", raw_race := "unknown"]
-tx[rawrace == "W", raw_race := "white"]
-levels(tx$raw_race)<-racelabels_i
-tx$raw_race<- ifelse(tx$rawrace == "H", "hispanic",
-                     ifelse(tx$rawrace == "B", "black",
-                            ifelse(tx$rawrace == "I", "indigenous",
-                                   ifelse(tx$rawrace == "M", "missing",
-                                          ifelse(tx$rawrace == "O", "other",
-                                                 ifelse(tx$rawrace == "U", "unknown",
-                                                        ifelse(tx$rawrace == "W", "white",
-                                                               "NA")))))))
-
-#mutate to make H-H H-O H-W by each year
-%>%
-  mutate(mc_time =        ifelse(mc=="H-H" & year==2009, "H-H'09",
-                                 ifelse(mc=="H-H" & year==2015, "H-H'15",
-                                        ifelse(mc=="H-W" & year==2009, "H-W'09",
-                                               ifelse(mc=="H-W" & year==2015, "H-W'15",
-                                                      ifelse(mc=="H-O" & year==2009, "H-O'09",
-                                                             ifelse(mc=="H-O" & year==2015, "H-O'15","Missing")))))))
-table(df4$mc,df4$mc_time)
-table(df4$year,df4$mc_time)
