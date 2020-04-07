@@ -49,6 +49,7 @@ tx$cleaned_race <- ifelse(tx$subject_race=="asian/pacific islander", "Asian", #/
                                                   ifelse(tx$subject_race == "white", "White", "Missing"))))))
 table(tx$subject_race,tx$raw_race)
 table(tx$subject_race,tx$cleaned_race)
+
 #reshape to make by year charts
 df1 <- tx %>%
   filter(!is.na(mc)) %>%
@@ -69,7 +70,12 @@ df3 <- tx %>%
   ungroup() %>%
   data.frame()
 
-#plot ----
+#reshape to look at 2009 versus 2015 mcs
+df4 <- tx %>%
+  filter(!is.na(mc)&(year==2009|year==2015))
+
+
+#main plots ----
 # plot race - raw and recoded, raw by recoded, and mcs
 #mc over time
 p1<-ggplot(data=df1, aes(x=year, y=stopped, color = mc))
@@ -98,20 +104,27 @@ p3<-p3+ geom_line(size = 1) +
   theme(text = element_text(size = 10)) +
   geom_point() + 
   labs(color = 'Imputed Race')
-ggarrange(p2, p3, ncol=2,common.legend = TRUE, legend="bottom")
+p2_p3<-ggarrange(p2, p3, ncol=2,common.legend = TRUE, legend="bottom")
 
-# explore ----
+#explore more plots without time ----
 ggplot(tx, aes(x=mc)) + geom_histogram(stat="count")
 ggplot(tx, aes(x=raw_race,fill= subject_race,color = raw_race)) + geom_histogram(stat="count") 
 ggplot(tx, aes(x=subject_race,fill= subject_race,color = subject_race)) + geom_histogram(stat="count")
 ggplot(tx, aes(x=raw_race,fill= subject_race)) + geom_bar(position="dodge")
 ggplot(tx, aes(x=mc_wmissing)) + geom_histogram(stat="count")
 
-#desc tables ----
+
+# main tables ----
+
+#mc descriptive stats table
+#demogs and stop stats
+t1<-table1(~ subject_sex + raw_race | mc,data=tx,Overall="Total")
+t2<-table1(~ search_basis + contraband_found + search_conducted + contraband_weapons + contraband_drugs + outcome | mc,data=tx,Overall="Total")
+#point in time - mc in 2009 and 2015
+t3<-table1(~ search_basis + contraband_found + search_conducted + contraband_weapons + contraband_drugs + outcome | mc*year,data=df4,Overall="Total")
+# explore tables w different race classifications ----
+#counts over time
 table(year(tx$date), tx$mc)
-
-# describe 
-
 #demogs
 #label(tx$subject_age) <-"Age"
 label(tx$subject_sex) <-"Sex"
@@ -120,7 +133,7 @@ label(tx$raw_race) <-"Race/Eth Raw Recorded"
 label(tx$mc) <-"Hispanic ReClassification 1"
 label(tx$mc_wmissing) <-"Hispanic ReClassification 2"
 table1(~ subject_sex + subject_race + raw_race + mc+ mc_wmissing,data=tx)
-#stop stats
+#stop stats label
 label(tx$search_basis) <-"Search Basis"
 label(tx$search_conducted) <-"Search Conducted"
 label(tx$contraband_found) <-"Contraband Found"
@@ -139,10 +152,17 @@ table1(~search_basis + contraband_found + search_conducted + contraband_weapons 
 table1(~search_basis + contraband_found + search_conducted + contraband_weapons + contraband_drugs + outcome | mc,data=tx,Overall="Total")
 table1(~search_basis + contraband_found + search_conducted + contraband_weapons + contraband_drugs + outcome | mc_wmissing,data=tx,Overall="Total")
 
-############## in process
-# do some stuff by time
 
-################Notes and deleted
+#name plots for rmd report / easy export ----
+p1_mc_stops_over_time <-p1
+p2_race_reported_imputed<-p2_p3
+t1_mc_demographics <-t1
+t2_mc_stopstats<-t2
+t3_mc_09n15_stopstats<-t3
+rm(df,df1,df2,df3,df4,p1,p2,p3,p2_p3,t1,t2,t3)
+
+
+################Notes and deleted ----
 #found contraband (numerator of hit rate)
 data$found.true <- NA
 data$found.true <- ifelse(data$contraband_found == T, T, ifelse(data$found.pistol ==T, T, ifelse(data$found.rifle==T, T, ifelse(data$found.assault == T, T, ifelse(data$found.knife== T, T, ifelse(data$found.machinegun==T, T, ifelse(data$found.other== T, T, ifelse(data$found.gun == T, T, ifelse(data$found.weapon==T, T, F)))))))))
@@ -183,3 +203,14 @@ tx$raw_race<- ifelse(tx$rawrace == "H", "hispanic",
                                                  ifelse(tx$rawrace == "U", "unknown",
                                                         ifelse(tx$rawrace == "W", "white",
                                                                "NA")))))))
+
+#mutate to make H-H H-O H-W by each year
+%>%
+  mutate(mc_time =        ifelse(mc=="H-H" & year==2009, "H-H'09",
+                                 ifelse(mc=="H-H" & year==2015, "H-H'15",
+                                        ifelse(mc=="H-W" & year==2009, "H-W'09",
+                                               ifelse(mc=="H-W" & year==2015, "H-W'15",
+                                                      ifelse(mc=="H-O" & year==2009, "H-O'09",
+                                                             ifelse(mc=="H-O" & year==2015, "H-O'15","Missing")))))))
+table(df4$mc,df4$mc_time)
+table(df4$year,df4$mc_time)
