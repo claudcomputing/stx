@@ -12,6 +12,10 @@ library(forcats)
 library(tidyverse)
 require(gridExtra)
 library(ggpubr)
+library(choroplethr)
+library(choroplethrMaps)
+library(mapproj)
+
 #p<-readRDS("C:/Users/csr315/Box/ddpe/stx/dta/kx738rc7407_tx_plano_2019_12_17.rds")
 #load("C:/Users/csr315/Box Sync/ddpe/stx/dta/Texas1MSample.Rdata")
 load("C:/Users/Claud/Box/ddpe/dta/Texas1MSample.Rdata")
@@ -153,13 +157,25 @@ table1(~search_basis + contraband_found + search_conducted + contraband_weapons 
 table1(~search_basis + contraband_found + search_conducted + contraband_weapons + contraband_drugs + outcome | mc_wmissing,data=tx,Overall="Total")
 
 
+#TX maps ----
+#TX County Percent Hispanic
+data(df_county_demographics)
+df_county_demographics$value = df_county_demographics$percent_hispanic
+m1<-county_choropleth(df_county_demographics, 
+                  state_zoom = "texas",
+                  title      = "Texas County Percent Hispanic 2012 Estimates",
+                  num_colors = 9) + coord_map()
+
 #name plots for rmd report / easy export ----
 p1_mc_stops_over_time <-p1
 p2_race_reported_imputed<-p2_p3
 t1_mc_demographics <-t1
 t2_mc_stopstats<-t2
 t3_mc_09n15_stopstats<-t3
-rm(df,df1,df2,df3,df4,p1,p2,p3,p2_p3,t1,t2,t3)
+m1_county_hispanic<-m1
+rm(df,df1,df2,df3,df4,p1,p2,p3,p2_p3,t1,t2,t3,m1)
+
+
 
 
 ################Notes and deleted ----
