@@ -10,7 +10,8 @@ library(table1)
 library(ggplot2)
 library(forcats)
 library(tidyverse)
-
+require(gridExtra)
+library(ggpubr)
 #p<-readRDS("C:/Users/csr315/Box/ddpe/stx/dta/kx738rc7407_tx_plano_2019_12_17.rds")
 #load("C:/Users/csr315/Box Sync/ddpe/stx/dta/Texas1MSample.Rdata")
 load("C:/Users/Claud/Box/ddpe/dta/Texas1MSample.Rdata")
@@ -26,11 +27,7 @@ tx<-tx %>%
   mutate(year=year(tx$date))
 table(year(tx$date), tx$mc)
 
-#define labels  
-
-
-
-#make raw race labels  ----
+#make raw race labels
 #labels middle east as white. Very few M (~40 in rand samp)
 levels(tx$subject_race)
 levels(as.factor(tx$rawrace))
@@ -43,14 +40,65 @@ tx$raw_race <- ifelse(tx$rawrace=="A", "Asian", #/Pacific Islander
 table(tx$raw_race,tx$rawrace)
 head(tx$rawrace)
 head(tx$raw_race)
-df <- tx %>%
-  select(year, mc, uempmed) %>%
-  gather(key = "variable", value = "value", -date)
-head(df, 3)
+
+tx$cleaned_race <- ifelse(tx$subject_race=="asian/pacific islander", "Asian", #/Pacific Islander
+                      ifelse(tx$subject_race=="black", "Black", 
+                             ifelse(tx$subject_race=="hispanic", "Hispanic",
+                                    ifelse(tx$subject_race == "other", "Other",
+                                           ifelse(tx$subject_race == "unknown", "Unknown",
+                                                  ifelse(tx$subject_race == "white", "White", "Missing"))))))
+table(tx$subject_race,tx$raw_race)
+table(tx$subject_race,tx$cleaned_race)
+#reshape to make by year charts
+df1 <- tx %>%
+  filter(!is.na(mc)) %>%
+  group_by(year, mc) %>%
+  summarize(stopped = n()) %>%
+  ungroup() %>%
+  data.frame()
+df2 <- tx %>%
+  filter(!is.na(raw_race)) %>%
+  group_by(year, raw_race) %>%
+  summarize(stopped = n()) %>%
+  ungroup() %>%
+  data.frame()
+df3 <- tx %>%
+  filter(!is.na(cleaned_race)) %>%
+  group_by(year, cleaned_race) %>%
+  summarize(stopped = n()) %>%
+  ungroup() %>%
+  data.frame()
 
 #plot ----
 # plot race - raw and recoded, raw by recoded, and mcs
-ggplot(data=tx, aes(x=year, y=mc)) + geom_line(aes(color = mc))
+#mc over time
+p1<-ggplot(data=df1, aes(x=year, y=stopped, color = mc))
+p1<-p1 + geom_line(size = 1) +
+  xlab('Year') +
+  ylab('Frequency') + 
+  ggtitle('Police Stops with Hispanic/Race Surnames by Race Reported Over Time') + 
+  theme(text = element_text(size = 10)) +
+ geom_point() + 
+  labs(color = 'Misclassification Category') +
+  scale_color_manual(values = c("#00AFBB", "#E7B800","purple"),
+                     labels = c('Reported as Hispanic', 'Reported as Other', 'Reported as White'))
+p2<-ggplot(data=df2, aes(x=year, y=stopped, color = raw_race))
+p2<-p2 + geom_line(size = 1) +
+  xlab('Year') +
+  ylab('Frequency, Race Reported') + 
+  ggtitle('Police Stops by Race Classifications Over Time') + 
+  theme(text = element_text(size = 10)) +
+  geom_point() + 
+  labs(color = 'Race Classification')
+p3<-ggplot(data=df3, aes(x=year, y=stopped, color = cleaned_race))
+p3<-p3+ geom_line(size = 1) +
+  xlab('Year') +
+  ylab('Frequency, Race with Hispanic Imputed') + 
+  ggtitle(' ') + #Imputed Race Category of Police Stops Over Time 
+  theme(text = element_text(size = 10)) +
+  geom_point() + 
+  labs(color = 'Imputed Race')
+ggarrange(p2, p3, ncol=2,common.legend = TRUE, legend="bottom")
 
 # explore ----
 ggplot(tx, aes(x=mc)) + geom_histogram(stat="count")
