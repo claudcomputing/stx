@@ -177,6 +177,12 @@ m2<-county_choropleth(df_county_demographics,
 #https://www.r-bloggers.com/advanced-choroplethr-changing-color-scheme-2/
 #https://www.r-bloggers.com/learn-to-map-census-data-in-r/
 
+## still want to make likelihood of finding contraband or being classified as H-W or H-H with pct in residence that is hispanic, or income,...like in frisky.pdf. oints along 45 deg line along location. Sized by 
+#Frisky - plot 3A and plot B precinct or prejudice. X axis: proportion of residents that are hispanic. Y axis: misclassification rates. Prop classified #as white. H: more hispanics, more misclassification rate
+
+
+
+
 #name plots for rmd report / easy export ----
 p1_mc_stops_over_time <-p1
 p2_race_reported_imputed<-p2_p3
