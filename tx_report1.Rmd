@@ -20,7 +20,7 @@ DUE: MONDAY MAY 11
    3 Merging census data with Texas data
    4 Clean Texas state data
    5 Create descriptive tables
-   6 Run regression models
+   6 Run regressions
 
 #outline of report
 clearly state and motivate your project/research question/policy evaluation idea, 
@@ -30,6 +30,51 @@ detail your results (with the appropriate plots), and
 discuss the implications of your findings. 
 Unless you receive permission for an exception from the instructor, you must also include a section discussing potential ethical implications or concerns related to the project .
 
+#outline of models to use
+
+Models
+Predict misclassification:
+Outcomes
+  Misclassification type H-W -- white/other
+  No Misclassification (H-H)
+
+Covariates
+  Year
+  County
+  Sex of subject
+  Officer is hispanic
+  Violation recode into categories (e.g. speeding)
+  Speeding
+  Stop sign
+  Red light
+  DUI
+  Tail light or head lamp
+  Med income age in geog level
+  Med age in geog level
+  %hisp in geog level ***
+  %white in geog level
+  %black in geog level
+  Dummy majority nonwhite in geog level
+  Dummy urban/nonwhite in geog level
+  Maybe crime 
+  RS: maybe characteristics of stop - ..time of day / 
+
+Predict Hit rate:
+Outcomes
+  Found contraband weapon/searches
+  Found contraband drugs/searches
+  Found contraband any/searches
+Covariates
+  Same as above
+
+
+Other ideas
+Veil of darkness
+RS: contraband found hit rates - does this vary by misc cat
+Demographics of person stopped varies by if state patrol data (city omre likely to be close to home)
+Discrepancies of hit rates - view all at once - see plots used in paper
+Points along 45 deg line along location. Sized by 
+Frisky - plot 3A and plot B precinct or prejudice. X axis: proportion of residents that are hispanic. Y axis: misclassification rates. Prop classified as white. H: more hispanics, more misclassification rate
 
 
 ```{r setup, include=FALSE}
