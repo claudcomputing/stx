@@ -15,7 +15,7 @@ library(ggpubr)
 library(choroplethr)
 library(choroplethrMaps)
 library(mapproj)
-
+library(RColorBrewer)
 #p<-readRDS("C:/Users/csr315/Box/ddpe/stx/dta/kx738rc7407_tx_plano_2019_12_17.rds")
 #load("C:/Users/csr315/Box Sync/ddpe/stx/dta/Texas1MSample.Rdata")
 load("C:/Users/Claud/Box/ddpe/dta/Texas1MSample.Rdata")
@@ -163,8 +163,18 @@ data(df_county_demographics)
 df_county_demographics$value = df_county_demographics$percent_hispanic
 m1<-county_choropleth(df_county_demographics, 
                   state_zoom = "texas",
-                  title      = "Texas County Percent Hispanic 2012 Estimates",
-                  num_colors = 9) + coord_map()
+                  title      = "Texas County Percent Hispanic Estimates, 2012",
+                  num_colors = 9) + coord_map() +scale_fill_manual(name="Percent Hispanic")
+#TX County Average Per Capita Income 
+df_county_demographics$value = df_county_demographics$per_capita_income 
+col.pal<-brewer.pal(7,"Greens")
+m2<-county_choropleth(df_county_demographics, 
+                      state_zoom = "texas",
+                      title      = "Texas County Income Per Capita Estimates, 2012",
+                      num_colors = 7) + coord_map() +scale_fill_manual(name="Per Capita Income",values=col.pal, drop=FALSE)
+
+#https://www.r-bloggers.com/advanced-choroplethr-changing-color-scheme-2/
+#https://www.r-bloggers.com/learn-to-map-census-data-in-r/
 
 #name plots for rmd report / easy export ----
 p1_mc_stops_over_time <-p1
@@ -173,7 +183,8 @@ t1_mc_demographics <-t1
 t2_mc_stopstats<-t2
 t3_mc_09n15_stopstats<-t3
 m1_county_hispanic<-m1
-rm(df,df1,df2,df3,df4,p1,p2,p3,p2_p3,t1,t2,t3,m1)
+m2_county_income<-m2
+rm(df,df1,df2,df3,df4,p1,p2,p3,p2_p3,t1,t2,t3,m1,m2)
 
 
 
