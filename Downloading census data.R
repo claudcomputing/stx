@@ -38,7 +38,7 @@ income_popul <-
   read_acs5year(
     year = 2015,
     states = "TX",
-    table_contents = c(median_income = "B22008_001"),
+    table_contents = c(median_income = "B19013_001"),
     summary_level = "tract")
 
 
