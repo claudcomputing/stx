@@ -9,14 +9,14 @@ library(totalcensus)
 # pull data ---------------------------------------------------------------
 
 #must set path first to save data
-set_path_to_census("/Users/MVERAS/Documents/Data Driven Eval/Data/CensusData")
-
+#set_path_to_census("/Users/MVERAS/Documents/Data Driven Eval/Data/CensusData")
+set_path_to_census("C:/Users/Claud/Box/Data/CensusData")
+setwd('C:/Users/Claud/Box/stx')
 
 #find the needed data
-search_tablecontents("dec", years = 2010)
-search_tablecontents("dec", years = 2010, keywords = "median age")
-
-search_tablecontents("acs5", years = 2010, keywords = "income")
+#search_tablecontents("dec", years = 2010)
+#search_tablecontents("dec", years = 2010, keywords = "median age")
+#search_tablecontents("acs5", years = 2010, keywords = "income")
 
 race_popul <- read_decennial(
   year = 2010,
@@ -34,6 +34,8 @@ race_popul <- read_decennial(
   summary_level = "tract"
 )
 
+save(race_popul, file = "txracepopinformationbytract.rdata")
+
 income_popul <-
   read_acs5year(
     year = 2015,
@@ -42,8 +44,7 @@ income_popul <-
     summary_level = "tract")
 
 
-save(race_popul, file = "txracepopinformationbytract.rdata")
-save(income_popul, file = "txincomeinformationbytract.rdata")
+save(income_popul, file = "C:/Users/Claud/Box/ddpe/stx/dta/txincomeinformationbytract.rdata")
 
 
 
