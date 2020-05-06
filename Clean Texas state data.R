@@ -4,12 +4,14 @@
 
 # set working directory -------------
 setwd("/Users/MVERAS/Documents/Data Driven Eval/Data/")
-
+setwd("C:/Users/Claud/Box/ddpe/stx")
 
 # load data ---------------------------------------------------------------
 
-load("Texas1MSample.Rdata")
-surnames <- fread("Top1000LastNames.csv")
+load("C:/Users/Claud/Box/ddpe/stx/dta/Texas1MSample.Rdata")
+surnames <- fread("C:/Users/Claud/Box/ddpe/stx/dta/Top1000.xls")
+#load("Texas1MSample.Rdata")
+#surnames <- fread("Top1000LastNames.csv")
 
 # load packages -----------------------------------------------------------
 library(data.table)
@@ -36,9 +38,14 @@ tx[, officer_last_name_hisp := 1*(!is.na(hispname))]
 # tx$violation
 violationtext <- dfm(tx$violation, remove = stopwords("english"), remove_punct = TRUE, stem = T)  
 topfeatures(violationtext)
-
+set.seed(100)
+textplot_wordcloud(violationtext, min_count = 6, random_order = FALSE,
+                   rotation = .25, 
+                   color = RColorBrewer::brewer.pal(8,"Dark2"))
 violationcolloc <- (textstat_collocations(tx$violation))
 violationcolloc3 <- (textstat_collocations(tx$violation, size =3))
 
 violationtable <- str_split(tx$violation, "[|]")
 violationtable <- as.vector(unlist(violationtable))
+
+write.csv(violationtable, 'C:/Users/Claud/Box/ddpe/stx/dta/Violation Codes.csv')
