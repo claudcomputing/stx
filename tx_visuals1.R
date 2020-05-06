@@ -18,10 +18,9 @@ library(mapproj)
 library(RColorBrewer)
 #p<-readRDS("C:/Users/csr315/Box/ddpe/stx/dta/kx738rc7407_tx_plano_2019_12_17.rds")
 #load("C:/Users/csr315/Box Sync/ddpe/stx/dta/Texas1MSample.Rdata")
-load("C:/Users/Claud/Box/ddpe/dta/Texas1MSample.Rdata")
+load("C:/Users/Claud/Box/ddpe/stx/dta/Texas1MSample.Rdata")
 head(tx$raw_HA_RACE_SEX)
 names(tx)
-
 #clean label reshape ----
 
 #subsample
@@ -179,8 +178,6 @@ m2<-county_choropleth(df_county_demographics,
 
 ## still want to make likelihood of finding contraband or being classified as H-W or H-H with pct in residence that is hispanic, or income,...like in frisky.pdf. oints along 45 deg line along location. Sized by 
 #Frisky - plot 3A and plot B precinct or prejudice. X axis: proportion of residents that are hispanic. Y axis: misclassification rates. Prop classified #as white. H: more hispanics, more misclassification rate
-
-
 
 
 #name plots for rmd report / easy export ----
