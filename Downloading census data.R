@@ -18,6 +18,8 @@ setwd('C:/Users/Claud/Box/stx')
 #search_tablecontents("dec", years = 2010, keywords = "median age")
 #search_tablecontents("acs5", years = 2010, keywords = "income")
 
+
+
 race_popul <- read_decennial(
   year = 2010,
   states = "TX",
@@ -40,12 +42,26 @@ income_popul <-
   read_acs5year(
     year = 2015,
     states = "TX",
-    table_contents = c(median_income = "B19013_001"),
+    table_contents = c("median_income = B19013_001"), 
     summary_level = "tract")
 
-
+search_tablecontents("acs5", years = 2015, keywords = "B19013_001")
+search_tablecontents("acs5", years = 2015, keywords = "median")
+#DP03_0062E median household income dp03 table
+# B19013_001 B06011PR_001 B19013_001
 save(income_popul, file = "C:/Users/Claud/Box/ddpe/stx/dta/txincomeinformationbytract.rdata")
 
+library(tidycensus)
 
-
+tx_hh_income <- get_acs(
+  geography = "tract",
+  year = 2015,
+  state = "TX",
+  survey = "acs5",
+  variables = "B19013_001",
+  key = Sys.getenv("CENSUS_API_KEY")
+) 
 # save(tx, file = "/Volumes/mbv221/Test Area/tx.rdata")
+income_popul<-tx_hh_income
+income_popul$median_income<-tx_hh_income$estimate
+save(income_popul, file = "C:/Users/Claud/Box/ddpe/stx/dta/txincomeinformationbytract.rdata")
