@@ -1,30 +1,26 @@
 #5 
-#run regressions
+#run regressions;
 
-#Data clean up
-### mutate and make H_W and H_H outcomes, searched, citation, found weapon, found drugs, etc
-## might want to randomly select from non searched since finding a weapon is so infrequent
 
-#Regressions on MC
-glm.found.w <- glm(H_W ~ year +rich_neighborhood +tacos+steak, data = glm_data, family = "binomial")
-result <- tidy(glm.found.w) %>% kable()
+################Notes 
+#found contraband (numerator of hit rate)
+data$found.true <- NA
+data$found.true <- ifelse(data$contraband_found == T, T, ifelse(data$found.pistol ==T, T, ifelse(data$found.rifle==T, T, ifelse(data$found.assault == T, T, ifelse(data$found.knife== T, T, ifelse(data$found.machinegun==T, T, ifelse(data$found.other== T, T, ifelse(data$found.gun == T, T, ifelse(data$found.weapon==T, T, F)))))))))
+names(tx)
+
+
+#Data frame for Predicted Probability Plot
+glm_data <- data %>% filter(suspected.crime == "cpw") %>% mutate(year.f = factor(year, level = c(2012:2016)))
+
+glm.found.t <- glm(found.weapon ~ suspect.age + suspect.height + suspect.weight + suspect.build + suspect.sex + year.f*suspect.race, data = glm_data, family = "binomial")
+
+glm.found <- glm(found.weapon ~ suspect.age + suspect.height + suspect.weight + suspect.build + suspect.sex + year*suspect.race, data = glm_data, family = "binomial")
+
 glm_data <- glm_data %>% 
-  mutate(predicted = predict(glm.found.w, type = "response"))
+  mutate(predicted = predict(glm.found.t, type = "response"))
 
-#Regressions on search citation etc
+# Save the logistic regression result
+result <- tidy(glm.found.t) %>% kable()
 
-#Regressions on hit rate
-glm.found.w <- glm(found.weapon ~ mc+ year, data = glm_data, family = "binomial")
-result <- tidy(glm.found.w) %>% kable()
-glm_data <- glm_data %>% 
-  mutate(predicted = predict(glm.found.w, type = "response"))
-
-glm.found.d <- glm(found.drugs ~ mc + year, data = glm_data, family = "binomial")
-result <- tidy(glm.found.d) %>% kable()
-glm_data <- glm_data %>% 
-  mutate(predicted = predict(glm.found.d, type = "response"))
-
-
-
-
-
+#time = factor(c("Lunch","Dinner"), levels=c("Lunch","Dinner")
+#forcats::fct_inorder(Day44$Sample)
