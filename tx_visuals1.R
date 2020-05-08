@@ -165,6 +165,7 @@ m1<-county_choropleth(df_county_demographics,
                   state_zoom = "texas",
                   title      = "Texas County Percent Hispanic Estimates, 2012",
                   num_colors = 9) + coord_map() + scale_fill_manual(name="Percent Hispanic",values=col.pal, drop=FALSE)
+
 #TX County Average Per Capita Income 
 df_county_demographics$value = df_county_demographics$per_capita_income 
 col.pal<-brewer.pal(7,"Greens")
@@ -175,6 +176,18 @@ m2<-county_choropleth(df_county_demographics,
 
 #https://www.r-bloggers.com/advanced-choroplethr-changing-color-scheme-2/
 #https://www.r-bloggers.com/learn-to-map-census-data-in-r/
+
+
+data(df_county_demographics)
+df_county_demographics$value = df_county_demographics$percent_black
+col.pal<-brewer.pal(9,"Reds")
+m3<-county_choropleth(df_county_demographics, 
+                      state_zoom = "texas",
+                      title      = "Texas County Percent Black Estimates, 2012",
+                      num_colors = 9) + coord_map() + scale_fill_manual(name="Percent Black",values=col.pal, drop=FALSE)
+m3
+
+
 
 ## still want to make likelihood of finding contraband or being classified as H-W or H-H with pct in residence that is hispanic, or income,...like in frisky.pdf. oints along 45 deg line along location. Sized by 
 #Frisky - plot 3A and plot B precinct or prejudice. X axis: proportion of residents that are hispanic. Y axis: misclassification rates. Prop classified #as white. H: more hispanics, more misclassification rate

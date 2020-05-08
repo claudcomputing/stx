@@ -26,6 +26,10 @@ require(tidyverse)
 
 #TX misclassification plot
 
+#https://learn.r-journalism.com/en/mapping/ggplot_maps/mapping-census/
+#http://zevross.com/blog/2015/10/14/manipulating-and-mapping-us-census-data-in-r-using-the-acs-tigris-and-leaflet-packages-3/#get-the-spatial-data-tigris
+#https://walker-data.com/tigris-webinar/#18 
+
 #reshape to get census level data for maps
 library(scales)
 library(rgdal)
