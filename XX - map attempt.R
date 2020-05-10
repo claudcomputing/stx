@@ -1,16 +1,23 @@
-#tx_maps1
+#map attempt 
 
-# env ----
-library(table1)
+# set working directory -------------
+setwd("/Users/MVERAS/Documents/Data Driven Eval/Data/")
+
+# load packages -----------------------------------------------------------
+library(data.table)
+library(tableone)
+library(stringr)
+library(magrittr)
+library(tidycensus)
+library(tidyverse)
+library(sf)
 library(ggplot2)
-library(forcats)
-require(gridExtra)
-library(ggpubr)
-library(choroplethr)
-library(choroplethrMaps)
-library(mapproj)
-library(RColorBrewer)
-library(lubridate)
+library(ggmap)
+library(scales)
+library(broom)
+# load data ---------------------------------------------------------------
+
+load("Texas1MSampleClean_Merged.Rdata")
 
 # preprocessing -----------------------------------------------------------
 
@@ -29,9 +36,10 @@ prop <- tx %>%
             prop_hisp = mean(prop_hisp)) %>%
   mutate(phw = misidtotal/total)
 
+
 # mapping -----------------------------------------------------------------
 txbase <- tidycensus::get_acs(state = "TX", geography = "tract",
-                              variables = "B19013_001", geometry = TRUE)
+                          variables = "B19013_001", geometry = TRUE)
 
 # plot(txbase) #slow- makes all the maps 
 
@@ -81,58 +89,3 @@ ggplot(m) +
 ggplot(m) + 
   geom_sf(aes(fill=prop_hisp)) +theme_nothing(legend=TRUE) + scale_fill_distiller(type="seq", trans="reverse", palette = "Greens", breaks=pretty_breaks(n=10)) 
 
-#select and reshape ----
-require(data.table)
-tx<-tx %>% 
-  filter(year(date)<2016 & year(date)> 2008) %>%
-  mutate(year=year(date))
-table(tx$year, tx$mc)
-require(tidyverse)
-
-#TX misclassification plot
-
-#https://learn.r-journalism.com/en/mapping/ggplot_maps/mapping-census/
-#http://zevross.com/blog/2015/10/14/manipulating-and-mapping-us-census-data-in-r-using-the-acs-tigris-and-leaflet-packages-3/#get-the-spatial-data-tigris
-#https://walker-data.com/tigris-webinar/#18 
-
-#reshape to get census level data for maps
-library(scales)
-library(rgdal)
-library(tigris)
-tracts <- tracts(state = 'TX', cb=TRUE)
-co20 <- counties("TX", cb = TRUE, resolution = "20m")
-try <- geo_join(co20, tx, "GEOID", "tractrow")
-
-df4 <- tx %>%
-  filter(!is.na(mc)&year==2009&mc=="H-W") %>%
-  select(tract,mc,population_dec_2010) %>%
-  group_by(tract,mc) %>%
-  summarize(total = n()) %>%
-  mutate(HWrate=mc/population_dec_2010)%>%
-  ungroup() %>%
-  data.frame()
-
-
-
-#####################NOTES ON OTHER STUFF I TRIED
-
-
-# Get rid of the census tracts with no data
-by_tract <- by_tract[!is.na(by_tract$GEOID10),]
-income_merged<- geo_join(tracts, tx, "tract", "tractrow")
-
-
-
-#maybe later
-#https://andrewbtran.github.io/NICAR/2017/maps/mapping-census-data.html
-m3 <-ggplot()
-m3 <- m3 +  geom_polygon(data = tx, aes(x=lng, y=lat, group=group, fill=total), color = "black", size=0.2) 
-m3 <- m3 + coord_map() 
-m3 <- m3 + scale_fill_distiller(type="seq", trans="reverse", palette = "Reds", breaks=pretty_breaks(n=10)) 
-m3 <- m3 + theme_nothing(legend=TRUE) 
-m3 <- m3 + labs(title="Where TX police traffic stops misclassify", fill="")
-print(m3)
-
-#qmplot(lon, lat, data = tx, colour = I('red'), size = I(3), darken = .3)
-#qmap(baylor, zoom = 14, source = "stamen", maptype = "watercolor")
-#qmap(baylor, zoom = 14, source = "stamen", maptype = "toner")
