@@ -24,7 +24,7 @@ library(broom)
 # load data ---------------------------------------------------------------
 
 load("Texas1MSampleClean_Merged.Rdata")
-
+#load("C:/Users/Claud/Box/ddpe/stx/dta/Texas1MSampleClean_Merged.rdata")
 
 # preprocessing -----------------------------------------------------------
 
@@ -109,12 +109,14 @@ model6 <-
   glm(
     citation_issued ~ prop_black + prop_hisp + misid +
       prop_white + prop_urban + median_age_dec_2010 +
-      income_acs_2015 + subject_sex ,
+      income_acs_2015 + subject_sex + year,
     data = tx,
     family = "binomial"
   )
 exp(coef(model6))
 
+tx$p6<-predict(model6, type = "response")
+#https://www.theanalysisfactor.com/r-tutorial-glm1/
 
 model7 <-
   glm(
@@ -123,8 +125,9 @@ model7 <-
       income_acs_2015 + subject_sex +
       viol_belt + viol_drug + viol_alcohol + viol_dui + viol_lamp + 
       viol_license + viol_plate + viol_registration + viol_speed + 
-      viol_traffic + viol_mod,
+      viol_traffic + viol_mod + year,
     data = tx,
     family = "binomial"
   )
 exp(coef(model7))
+summary(model7)

@@ -101,18 +101,8 @@ df5 <- tx %>%
   group_by(year, misid) %>%
   summarize(citation_issued_rate=sum(citation_issued_freq*citation_dummy)/sum(citation_issued_freq)) %>%
   data.frame() 
-df5
 
-p5<-ggplot(data=df5, aes(x=year, y=citation_issued_rate, color = misid))
-p5<-p5 + geom_line(size = 1) +
-  xlab('Year') +
-  ylab('Citations Issued Rated (Percent of Total Stops)') + 
-  ggtitle('Rate of Citations Issued as a Share of Stops Reported Over Time') + 
-  theme(text = element_text(size = 10)) +
-  geom_point() + 
-  labs(color = 'Misclassification Category') +
-  scale_color_manual(values = c("#00AFBB", "#E7B800"),
-                     labels = c('Reported as Hispanic', 'Reported as White'))
+
 #main plots ----
 # plot race - raw and recoded, raw by recoded, and mcs
 #mc over time
@@ -143,6 +133,19 @@ p3<-p3+ geom_line(size = 1) +
   geom_point() + 
   labs(color = 'Imputed Race')
 p2_p3<-ggarrange(p2, p3, ncol=2,common.legend = TRUE, legend="bottom")
+
+# plot citation over time by misclass
+p5<-ggplot(data=df5, aes(x=year, y=citation_issued_rate, color = as.factor(misid)))
+p5<-p5 + geom_line(size = 1) +
+  xlab('Year') +
+  ylab('Citations Issued Rated (Percent of Total Stops)') + 
+  ggtitle('Rate of Citations Issued as a Share of Stops Reported Over Time') + 
+  theme(text = element_text(size = 10)) +
+  geom_point() + 
+  labs(color = 'Misclassification Category') +
+  scale_color_manual(values = c("#00AFBB", "#E7B800"),
+                     labels = c('Reported as Hispanic', 'Reported as White'))
+p5
 
 #explore more plots without time ----
 ggplot(tx, aes(x=mc)) + geom_histogram(stat="count")
@@ -225,9 +228,9 @@ data(df_county_demographics)
 df_county_demographics$value = df_county_demographics$percent_hispanic
 col.pal<-brewer.pal(9,"Blues")
 m1<-county_choropleth(df_county_demographics, 
-                  state_zoom = "texas",
-                  title      = "Texas County Percent Hispanic Estimates, 2012",
-                  num_colors = 9) + coord_map() + scale_fill_manual(name="Percent Hispanic",values=col.pal, drop=FALSE)
+                      state_zoom = "texas",
+                      title      = "Texas County Percent Hispanic Estimates, 2012",
+                      num_colors = 9) + coord_map() + scale_fill_manual(name="Percent Hispanic",values=col.pal, drop=FALSE)
 #TX County Average Per Capita Income 
 df_county_demographics$value = df_county_demographics$per_capita_income 
 col.pal<-brewer.pal(7,"Greens")
@@ -235,6 +238,17 @@ m2<-county_choropleth(df_county_demographics,
                       state_zoom = "texas",
                       title      = "Texas County Income Per Capita Estimates, 2012",
                       num_colors = 7) + coord_map() +scale_fill_manual(name="Per Capita Income",values=col.pal, drop=FALSE)
+#TX County Percent White
+data(df_county_demographics)
+df_county_demographics$value = df_county_demographics$percent_black
+col.pal<-brewer.pal(9,"Greys")
+m4<-county_choropleth(df_county_demographics, 
+                      state_zoom = "texas",
+                      title      = "Texas County Percent White Estimates, 2012",
+                      num_colors = 9) + coord_map() + scale_fill_manual(name="Percent White",values=col.pal, drop=FALSE)
+
+m4
+
 
 #https://www.r-bloggers.com/advanced-choroplethr-changing-color-scheme-2/
 #https://www.r-bloggers.com/learn-to-map-census-data-in-r/
