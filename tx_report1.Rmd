@@ -1,8 +1,9 @@
 ---
-title: ""
+title: ''
 author: "Claudia Solis-Roman"
 date: "March 8, 2020"
-output: html_document
+output:
+  pdf_document: default
 ---
 
 #Ravi clas proj - Texas stops & race classification 
@@ -76,14 +77,102 @@ Discrepancies of hit rates - view all at once - see plots used in paper
 Points along 45 deg line along location. Sized by 
 Frisky - plot 3A and plot B precinct or prejudice. X axis: proportion of residents that are hispanic. Y axis: misclassification rates. Prop classified as white. H: more hispanics, more misclassification rate
 
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 #no code shown or run
+
+
+# load packages -----------------------------------------------------------
+library(data.table)
+library(tableone)
+library(stringr)
+library(quanteda)
+library(tigris)
+library(sf)
+library(magrittr)
+library(tidycensus)
+library(dplyr)
+library(car)
+
+library(geepack)
+library(lme4)
+library(lmerTest)
+library(broom)
+library(stargazer)
 ```
 
-```{r}
+#Misid outcome models
 
+###copy pasted from prog 4- Run Models
+```{r}
+load("C:/Users/Claud/Box/ddpe/stx/dta/Texas1MSampleClean_Merged.Rdata")
+
+# preprocessing -----------------------------------------------------------
+
+tx_merged[mc!= "H-O", misid := 1*(mc == "H-W")]
+
+tx<-tx_merged %>% 
+  filter(year(date)<2016 & year(date)> 2008 & mc %in% c("H-W", "H-H")) %>%
+  mutate(year=year(date),misid=as.factor(misid))
+
+
+
+# predict misid -----------------------------------------------------------
+
+model1 <-
+  glm(
+    misid ~ prop_black + prop_hisp + 
+      prop_white + prop_urban + median_age_dec_2010 +
+      income_acs_2015 + subject_sex + year,
+    data = tx,
+    family = "binomial"
+  )
+
+model2 <-
+  glm(
+    misid ~ prop_black + prop_hisp + 
+      prop_white + prop_urban + median_age_dec_2010 +
+      income_acs_2015 + subject_sex + year + officer_last_name_hisp,
+    data = tx,
+    family = "binomial"
+  )
+
+
+model3 <-
+  glm(
+    misid ~ prop_black + prop_hisp + 
+      prop_white + prop_urban + median_age_dec_2010 +
+      income_acs_2015 + subject_sex + year + officer_last_name_hisp +
+      viol_belt + viol_drug + viol_alcohol + viol_dui + viol_lamp + 
+      viol_license + viol_plate + viol_registration + viol_speed + 
+      viol_traffic + viol_mod,
+    data = tx,
+    family = "binomial"
+  )
+
+# vif(model3)
+anova(model1, model2, test = "Rao")
+anova(model1, model2, model3, test = "Rao")
+AIC(model1)
+AIC(model2)
+AIC(model3)
+
+model3table <- tidy(model3)
+write.csv(model3table, file = "logitmodelforppt.csv")
+exp(coef(model3))
+```
+
+```{r, results='asis', header = FALSE}
+#stargazer(tx[1:3], summary=FALSE, header=FALSE, 
+          #digits=2,
+         # title="Descriptives table") 
+
+stargazer(data=model1, model2, model3,
+          header=FALSE, 
+          type='latex',
+          title            = "Logistic Reg on Misid",
+          dep.var.caption  = "Hispanic Driver Recorded as White",
+           column.labels = c("Model1", "Model2", "Model3"))
 ```
 
 ## Including Plots
