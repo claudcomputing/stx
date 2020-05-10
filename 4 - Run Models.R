@@ -3,7 +3,8 @@
 
 
 # set working directory -------------
-setwd("/Users/MVERAS/Documents/Data Driven Eval/Data/")
+#setwd("/Users/MVERAS/Documents/Data Driven Eval/Data/")
+setwd('C:/Users/Claud/Box/stx')
 
 # load packages -----------------------------------------------------------
 library(data.table)
@@ -24,7 +25,6 @@ library(broom)
 # load data ---------------------------------------------------------------
 
 load("Texas1MSampleClean_Merged.Rdata")
-#load("C:/Users/Claud/Box/ddpe/stx/dta/Texas1MSampleClean_Merged.rdata")
 
 # preprocessing -----------------------------------------------------------
 
@@ -32,7 +32,7 @@ tx_merged[mc!= "H-O", misid := 1*(mc == "H-W")]
 
 tx<-tx_merged %>% 
   filter(year(date)<2016 & year(date)> 2008 & mc %in% c("H-W", "H-H")) %>%
-  mutate(year=year(date))
+  mutate(year=year(date),misid=as.factor(misid))
 
 
 
@@ -114,9 +114,6 @@ model6 <-
     family = "binomial"
   )
 exp(coef(model6))
-
-tx$p6<-predict(model6, type = "response")
-#https://www.theanalysisfactor.com/r-tutorial-glm1/
 
 model7 <-
   glm(
