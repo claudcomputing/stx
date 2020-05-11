@@ -173,6 +173,8 @@ stargazer(data=model1, model2, model3,
           title            = "Logistic Reg on Misid",
           dep.var.caption  = "Hispanic Driver Recorded as White",
            column.labels = c("Model1", "Model2", "Model3"))
+
+#can also copy out into overleaf to make changes directly in LaTeX using output from running this chunk in R without knitting
 ```
 
 ## Including Plots
