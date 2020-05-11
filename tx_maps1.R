@@ -12,6 +12,18 @@ library(mapproj)
 library(RColorBrewer)
 library(lubridate)
 
+library(data.table)
+library(tableone)
+library(stringr)
+library(magrittr)
+library(tidycensus)
+library(tidyverse)
+library(sf)
+library(ggplot2)
+library(ggmap)
+library(scales)
+library(broom)
+
 # preprocessing -----------------------------------------------------------
 
 tx_merged[mc!= "H-O", misid := 1*(mc == "H-W")]
@@ -63,24 +75,33 @@ justtexas <- ggplot() +
 #   geom_sf(aes(fill=total)) 
 
 #total number of stops
-ggplot(m) + 
-  geom_sf(aes(fill=total)) +theme_nothing(legend=TRUE) + scale_fill_distiller(type="seq", trans="reverse", palette = "Reds", breaks=pretty_breaks(n=5)) 
-
-
+m1<-ggplot(m) + geom_sf(aes(fill=total)) +theme_nothing(legend=TRUE) + scale_fill_distiller(type="seq", trans="reverse", palette = "Greys", breaks=pretty_breaks(n=5)) +ggtitle('Number of Vehicle Stops by Texas Troopers, 2009-2015')
 
 #proportion of the hispanic stops labeled as white 
-ggplot(m) + 
-  geom_sf(aes(fill=phw)) +theme_nothing(legend=TRUE) + scale_fill_distiller(type="seq", trans="reverse", palette = "Reds", breaks=pretty_breaks(n=10)) 
+m2<- ggplot(m) + geom_sf(aes(fill=phw)) + theme_nothing(legend=TRUE) + scale_fill_distiller(type="seq", trans="reverse", palette = "Reds", breaks=pretty_breaks(n=10)) +ggtitle('Proportion of Hispanic Stops Labeled as White, 2009-2015')
+#maybe do a 2009 map compared to a 2015 map
 
 #proportion of census tract that is white
-ggplot(m) + 
-  geom_sf(aes(fill=prop_white)) +theme_nothing(legend=TRUE) + scale_fill_distiller(type="seq", trans="reverse", palette = "Greens", breaks=pretty_breaks(n=10)) 
+m3<-ggplot(m) + 
+  geom_sf(aes(fill=prop_white)) +theme_nothing(legend=TRUE) + scale_fill_distiller(type="seq", trans="reverse", palette = "Purples", breaks=pretty_breaks(n=10)) +ggtitle('Proportion of Population that is White, 2009-2015')
+
+#proportion of census tract that is hispanic
+m4<-ggplot(m) + 
+  geom_sf(aes(fill=prop_hisp)) +theme_nothing(legend=TRUE) + scale_fill_distiller(type="seq", trans="reverse", palette = "Blues", breaks=pretty_breaks(n=10)) +ggtitle('Proportion of Population that is Hispanic, 2009-2015')
+
+#proportion of census tract that is black
+m5<-ggplot(m) + 
+  geom_sf(aes(fill=prop_black)) +theme_nothing(legend=TRUE) + scale_fill_distiller(type="seq", trans="reverse", palette = "Purples", breaks=pretty_breaks(n=10)) +ggtitle('Proportion of Population that is Black, 2009-2015')
+
+m1
+m2
+m3
+m4
+m5
 
 
-#proportion of census tract that is white
-ggplot(m) + 
-  geom_sf(aes(fill=prop_hisp)) +theme_nothing(legend=TRUE) + scale_fill_distiller(type="seq", trans="reverse", palette = "Greens", breaks=pretty_breaks(n=10)) 
 
+#Other notes on other attempts--------
 #select and reshape ----
 require(data.table)
 tx<-tx %>% 
@@ -88,6 +109,7 @@ tx<-tx %>%
   mutate(year=year(date))
 table(tx$year, tx$mc)
 require(tidyverse)
+
 
 #TX misclassification plot
 
