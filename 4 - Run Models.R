@@ -32,7 +32,7 @@ tx_merged[mc!= "H-O", misid := 1*(mc == "H-W")]
 
 tx<-tx_merged %>% 
   filter(year(date)<2016 & year(date)> 2008 & mc %in% c("H-W", "H-H")) %>%
-  mutate(year=year(date),misid=as.factor(misid))
+  mutate(year=year(date))
 
 
 
