@@ -91,10 +91,6 @@ df3 <- tx %>%
   ungroup() %>%
   data.frame()
 
-#reshape to look at 2009 versus 2015 mcs
-df4 <- tx %>%
-  filter(!is.na(mc)&(year==2009|year==2015))
-
 df5 <- tx %>%
   filter(!is.na(misid)) %>%
   mutate(citation_dummy=as.integer(citation_issued)) %>%
@@ -162,10 +158,7 @@ ggplot(tx, aes(x=mc_wmissing)) + geom_histogram(stat="count")
 
 #mc descriptive stats table
 #demogs and stop stats
-t1<-table1(~ subject_sex + raw_race | mc,data=tx,Overall="Total")
-t2<-table1(~ search_basis + contraband_found + search_conducted + contraband_weapons + contraband_drugs + outcome | mc,data=tx,Overall="Total")
-#point in time - mc in 2009 and 2015
-t3<-table1(~ search_basis + contraband_found + search_conducted + contraband_weapons + contraband_drugs + outcome | mc*year,data=df4,Overall="Total")
+
 # explore tables w different race classifications ----
 #counts over time
 table(year(tx$date), tx$mc)
@@ -175,8 +168,9 @@ label(tx$subject_sex) <-"Sex"
 label(tx$subject_race) <-"Race/Ethnicity Recoded"
 label(tx$raw_race) <-"Race/Eth Raw Recorded"
 label(tx$mc) <-"Hispanic ReClassification 1"
+label(tx$misid) <-"Hispanic Coded as White Identification"
 # label(tx$mc_wmissing) <-"Hispanic ReClassification 2" #removed 
-table1(~ subject_sex + subject_race + raw_race + mc
+#table1(~ subject_sex + subject_race + raw_race + mc
        # +mc_wmissing
        ,data=tx)
 #stop stats label
@@ -186,17 +180,29 @@ label(tx$contraband_found) <-"Contraband Found"
 label(tx$contraband_weapons) <-"Contraband Weapons"
 label(tx$contraband_drugs) <-"Contraband Drugs"
 label(tx$outcome)<-"Outcome"
-table1(~search_basis + contraband_found + search_conducted + contraband_weapons + contraband_drugs + outcome,data=tx)
-#stratified demogs
+#table1(~search_basis + contraband_found + search_conducted + contraband_weapons + contraband_drugs + outcome,data=tx)
+#t1<-table1(~ subject_sex + raw_race | misid,data=tx,Overall="Total")
+
+#main tables
+t2<-table1(~ search_basis + contraband_found + search_conducted + contraband_weapons + contraband_drugs + outcome | misid,data=tx,Overall="Total")
+#point in time - mc in 2009 and 2015
+#reshape to look at 2009 versus 2015 mcs
+df4 <- tx %>%
+  filter(!is.na(misid)&(year==2009|year==2015))
+t3<-table1(~ search_basis + contraband_found + search_conducted + contraband_weapons + contraband_drugs + outcome | misid*year, data=df4,Overall="Total")
+
+
+
+# more stratified demogs
 table1(~ subject_sex + raw_race | raw_race,data=tx,Overall="Total")
 # table1(~ subject_sex + raw_race | subject_race,data=tx,Overall="Total")
 table1(~ subject_sex + raw_race | mc,data=tx,Overall="Total")
 # table1(~ subject_sex + raw_race | mc_wmissing,data=tx,Overall="Total")
 
-#stratified stop stats
+#more stratified stop stats
 table1(~search_basis + contraband_found + search_conducted + contraband_weapons + contraband_drugs + outcome | raw_race,data=tx,Overall="Total")
 table1(~search_basis + contraband_found + search_conducted + contraband_weapons + contraband_drugs + outcome | suspect_race,data=tx,Overall="Total")
-table1(~search_basis + contraband_found + search_conducted + contraband_weapons + contraband_drugs + outcome | mc,data=tx,Overall="Total")
+table1(~search_basis + contraband_found + search_conducted + contraband_weapons + contraband_drugs + outcome | misid,data=tx,Overall="Total")
 table1(~search_basis + contraband_found + search_conducted + contraband_weapons + contraband_drugs + outcome | mc_wmissing,data=tx,Overall="Total")
 
 
@@ -243,12 +249,20 @@ m2<-county_choropleth(df_county_demographics,
                       num_colors = 7) + coord_map() +scale_fill_manual(name="Per Capita Income",values=col.pal, drop=FALSE)
 #TX County Percent White
 data(df_county_demographics)
-df_county_demographics$value = df_county_demographics$percent_black
+df_county_demographics$value = df_county_demographics$percent_white
 col.pal<-brewer.pal(9,"Greys")
 m4<-county_choropleth(df_county_demographics, 
                       state_zoom = "texas",
                       title      = "Texas County Percent White Estimates, 2012",
                       num_colors = 9) + coord_map() + scale_fill_manual(name="Percent White",values=col.pal, drop=FALSE)
+#TX County Percent Black
+data(df_county_demographics)
+df_county_demographics$value = df_county_demographics$percent_black
+col.pal<-brewer.pal(9,"Blues")
+m5<-county_choropleth(df_county_demographics, 
+                      state_zoom = "texas",
+                      title      = "Texas County Percent Black Estimates, 2012",
+                      num_colors = 9) + coord_map() + scale_fill_manual(name="Percent Black",values=col.pal, drop=FALSE)
 
 
 #https://www.r-bloggers.com/advanced-choroplethr-changing-color-scheme-2/
