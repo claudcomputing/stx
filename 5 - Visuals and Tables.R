@@ -19,9 +19,12 @@ library(RColorBrewer)
 library(data.table)
 library(effects)
 
+library(stargazer)
+
 # set working directory ---------------------------------------------------
 
-setwd("/Users/MVERAS/Documents/Data Driven Eval/Data/")
+#setwd("/Users/MVERAS/Documents/Data Driven Eval/Data/")
+setwd('C:/Users/Claud/Box/stx')
 
 # load data ---------------------------------------------------------------
 
@@ -47,21 +50,21 @@ table(year(tx$date), tx$mc) #good!
 levels(tx$subject_race)
 levels(as.factor(tx$rawrace))
 tx$raw_race <- ifelse(tx$rawrace=="A", "Asian", #/Pacific Islander
-                           ifelse(tx$rawrace=="B", "Black", 
-                                  ifelse(tx$rawrace=="H", "Hispanic",
-                                         ifelse(tx$rawrace %in% c("I","O"), "Other",
-                                                ifelse(tx$rawrace == "U", "Unknown",
-                                                       ifelse(tx$rawrace %in% c("M","W"), "White", "Missing"))))))
+                      ifelse(tx$rawrace=="B", "Black", 
+                             ifelse(tx$rawrace=="H", "Hispanic",
+                                    ifelse(tx$rawrace %in% c("I","O"), "Other",
+                                           ifelse(tx$rawrace == "U", "Unknown",
+                                                  ifelse(tx$rawrace %in% c("M","W"), "White", "Missing"))))))
 table(tx$raw_race,tx$rawrace)
 head(tx$rawrace)
 head(tx$raw_race)
 
 tx$cleaned_race <- ifelse(tx$subject_race=="asian/pacific islander", "Asian", #/Pacific Islander
-                      ifelse(tx$subject_race=="black", "Black", 
-                             ifelse(tx$subject_race=="hispanic", "Hispanic",
-                                    ifelse(tx$subject_race == "other", "Other",
-                                           ifelse(tx$subject_race == "unknown", "Unknown",
-                                                  ifelse(tx$subject_race == "white", "White", "Missing"))))))
+                          ifelse(tx$subject_race=="black", "Black", 
+                                 ifelse(tx$subject_race=="hispanic", "Hispanic",
+                                        ifelse(tx$subject_race == "other", "Other",
+                                               ifelse(tx$subject_race == "unknown", "Unknown",
+                                                      ifelse(tx$subject_race == "white", "White", "Missing"))))))
 table(tx$subject_race,tx$raw_race)
 table(tx$subject_race,tx$cleaned_race)
 
@@ -246,8 +249,6 @@ m4<-county_choropleth(df_county_demographics,
                       state_zoom = "texas",
                       title      = "Texas County Percent White Estimates, 2012",
                       num_colors = 9) + coord_map() + scale_fill_manual(name="Percent White",values=col.pal, drop=FALSE)
-
-m4
 
 
 #https://www.r-bloggers.com/advanced-choroplethr-changing-color-scheme-2/
