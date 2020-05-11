@@ -12,6 +12,7 @@ library(mapproj)
 library(RColorBrewer)
 library(lubridate)
 
+
 library(data.table)
 library(tableone)
 library(stringr)
@@ -41,6 +42,14 @@ prop <- tx %>%
             prop_hisp = mean(prop_hisp)) %>%
   mutate(phw = misidtotal/total)
 
+prop_year<-tx %>%
+  group_by(GEOID,year) %>% 
+  summarise(total = n(),
+            misidtotal = sum(misid),
+            prop_white = mean(prop_white),
+            prop_black = mean(prop_black),
+            prop_hisp = mean(prop_hisp)) %>%
+  mutate(phw = misidtotal/total)
 # mapping -----------------------------------------------------------------
 txbase <- tidycensus::get_acs(state = "TX", geography = "tract",
                               variables = "B19013_001", geometry = TRUE)
@@ -51,6 +60,12 @@ txbase <- tidycensus::get_acs(state = "TX", geography = "tract",
 
 m <- merge(prop, txbase, by = "GEOID")
 m <- st_as_sf(m)
+myear <- merge(prop_year, txbase, by = "GEOID")
+myear <- st_as_sf(myear)
+m09<-myear %>%
+  filter(year==2009)
+m15<-myear %>%
+  filter(year==2015)
 
 # plot(m)
 
@@ -62,6 +77,7 @@ justtexas <- ggplot() +
                             panel.grid.minor = element_blank(),
                             panel.border = element_blank(),
                             panel.background = element_blank()) 
+
 
 
 # plot(m["total"])
@@ -80,6 +96,8 @@ m1<-ggplot(m) + geom_sf(aes(fill=total)) +theme_nothing(legend=TRUE) + scale_fil
 #proportion of the hispanic stops labeled as white 
 m2<- ggplot(m) + geom_sf(aes(fill=phw)) + theme_nothing(legend=TRUE) + scale_fill_distiller(type="seq", trans="reverse", palette = "Reds", breaks=pretty_breaks(n=10)) +ggtitle('Proportion of Hispanic Stops Labeled as White, 2009-2015')
 #maybe do a 2009 map compared to a 2015 map
+m2_09<- ggplot(m09) + geom_sf(aes(fill=phw)) + theme_nothing(legend=TRUE) + scale_fill_distiller(type="seq", trans="reverse", palette = "Reds", breaks=pretty_breaks(n=10)) +ggtitle('Proportion of Hispanic Stops Labeled as White, 2009')
+m2_15<- ggplot(m15) + geom_sf(aes(fill=phw)) + theme_nothing(legend=TRUE) + scale_fill_distiller(type="seq", trans="reverse", palette = "Reds", breaks=pretty_breaks(n=10)) +ggtitle('Proportion of Hispanic Stops Labeled as White, 2015')
 
 #proportion of census tract that is white
 m3<-ggplot(m) + 
@@ -98,8 +116,8 @@ m2
 m3
 m4
 m5
-
-
+m2_09
+m2_15
 
 #Other notes on other attempts--------
 #select and reshape ----
