@@ -39,7 +39,7 @@ prop <- tx %>%
 
 # mapping -----------------------------------------------------------------
 txbase <- tidycensus::get_acs(state = "TX", geography = "tract",
-                          variables = "B19013_001", geometry = TRUE)
+                              variables = "B19013_001", geometry = TRUE)
 
 # plot(txbase) #slow- makes all the maps 
 
