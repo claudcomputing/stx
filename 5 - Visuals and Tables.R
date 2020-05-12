@@ -235,7 +235,7 @@ tx$misid_label <-
   factor(tx$misid, levels=c(1,0),
          labels=c("H-H", 
                   "H-W"))
-
+#https://cran.r-project.org/web/packages/table1/vignettes/table1-examples.html
 tx$viol_alcohol <- factor(tx$viol_alcohol, levels=c(1,0),
                           labels=c("H-H", 
                                    "H-W"))
